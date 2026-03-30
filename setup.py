@@ -13,12 +13,12 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 setup(
     name="matocr8d",
     version="0.1.0",
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="matocr8d Contributors",
+    author_email="contributors@matocr8d.dev",
     description="A simple OCR library for Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/matocr8d",
+    url="https://github.com/matocr8d/matocr8d",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -39,8 +39,8 @@ setup(
     include_package_data=True,
     keywords="ocr, text extraction, image processing, tesseract",
     project_urls={
-        "Bug Reports": "https://github.com/yourusername/matocr8d/issues",
-        "Source": "https://github.com/yourusername/matocr8d",
-        "Documentation": "https://github.com/yourusername/matocr8d/wiki",
+        "Bug Reports": "https://github.com/matocr8d/matocr8d/issues",
+        "Source": "https://github.com/matocr8d/matocr8d",
+        "Documentation": "https://github.com/matocr8d/matocr8d/wiki",
     },
 )
