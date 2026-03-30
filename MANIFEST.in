@@ -1,0 +1,17 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+include pyproject.toml
+include setup.py
+include requirements*.txt
+recursive-include matocr8d *.py
+recursive-include examples *.py
+recursive-include tests *.py
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude *.so
+prune .git
+prune .github
+prune docs/_build
