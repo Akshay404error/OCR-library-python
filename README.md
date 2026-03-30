@@ -1,291 +1,228 @@
-# MatOCR8D - Advanced OCR Library
+# matocr8d
 
-[![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![PyPI Version](https://img.shields.io/pypi/v/matocr8d.svg)](https://pypi.org/project/matocr8d/)
-[![Build Status](https://img.shields.io/travis/yourusername/matocr8d.svg)](https://travis-ci.com/yourusername/matocr8d)
-[![Documentation](https://img.shields.io/readthedocs/matocr8d/latest.svg)](https://matocr8d.readthedocs.io/)
-
-MatOCR8D is a powerful and flexible Python library for optical character recognition (OCR) that supports multiple OCR engines and provides advanced image preprocessing capabilities. It's designed to be easy to use while offering professional-grade features for text extraction from images.
+A simple and easy-to-use OCR (Optical Character Recognition) library for Python that leverages Tesseract OCR engine for text extraction from images.
 
 ## Features
 
-- **Multiple OCR Engines**: Support for Tesseract, EasyOCR, and PaddleOCR
-- **Advanced Preprocessing**: Image enhancement, deskewing, noise reduction
-- **Confidence Scoring**: Get confidence scores for extracted text
-- **Multi-language Support**: Support for 80+ languages across different engines
-- **Batch Processing**: Process multiple images efficiently
-- **Flexible Output Formats**: Choose between simple text or detailed results
-- **Easy Integration**: Simple API with sensible defaults
+- Extract text from various image formats (JPEG, PNG, BMP, TIFF, WebP)
+- Support for multiple languages
+- Get text with confidence scores and metadata
+- Extract text blocks with bounding box coordinates
+- Simple and intuitive API
+- Comprehensive error handling
 
 ## Installation
 
-### Basic Installation
+### Prerequisites
+
+1. Install Tesseract OCR on your system:
+   
+   **Windows:**
+   ```bash
+   # Download and install from: https://github.com/UB-Mannheim/tesseract/wiki
+   # Make sure to add Tesseract to your PATH
+   ```
+   
+   **macOS:**
+   ```bash
+   brew install tesseract
+   ```
+   
+   **Ubuntu/Debian:**
+   ```bash
+   sudo apt update
+   sudo apt install tesseract-ocr
+   ```
+
+2. Install additional language packs if needed:
+   ```bash
+   # Ubuntu/Debian
+   sudo apt install tesseract-ocr-[lang_code]
+   
+   # Example for Spanish
+   sudo apt install tesseract-ocr-spa
+   ```
+
+### Install the library
 
 ```bash
 pip install matocr8d
 ```
 
-### With Specific OCR Engine
-
-```bash
-# For Tesseract support
-pip install matocr8d[tesseract]
-
-# For EasyOCR support  
-pip install matocr8d[easyocr]
-
-# For PaddleOCR support
-pip install matocr8d[paddleocr]
-
-# For all engines
-pip install matocr8d[all]
-```
-
-### Development Installation
-
+Or install from source:
 ```bash
 git clone https://github.com/yourusername/matocr8d.git
 cd matocr8d
-pip install -e .[dev]
+pip install -r requirements.txt
+pip install -e .
 ```
 
 ## Quick Start
 
-### Basic Usage
-
 ```python
 from matocr8d import MatOCR8D
 
-# Initialize with default Tesseract engine
+# Initialize OCR engine
 ocr = MatOCR8D()
 
-# Extract text from an image
-text = ocr.extract_text("image.jpg")
+# Extract text from image file
+text = ocr.extract_text("path/to/image.jpg")
 print(text)
-```
 
-### Using Different Engines
-
-```python
-# Using EasyOCR
-ocr = MatOCR8D(engine="easyocr", language="en")
-
-# Using PaddleOCR
-ocr = MatOCR8D(engine="paddleocr", language="ch")
-
-# Extract text with confidence scores
-result = ocr.extract_text("image.jpg", return_confidence=True)
+# Extract text with metadata
+result = ocr.extract_text_with_data("path/to/image.jpg")
 print(f"Text: {result['text']}")
 print(f"Confidence: {result['confidence']}")
+print(f"Word count: {result['word_count']}")
+
+# Extract text blocks with coordinates
+blocks = ocr.extract_text_blocks("path/to/image.jpg")
+for block in blocks:
+    print(f"Text: '{block['text']}' at {block['bbox']}")
 ```
 
-### Advanced Usage
+## Advanced Usage
+
+### Using Different Languages
 
 ```python
-# With preprocessing and custom confidence threshold
-ocr = MatOCR8D(
-    engine="tesseract",
-    language="eng",
-    preprocessing=True,
-    confidence_threshold=0.7
-)
+# Initialize with Spanish language
+ocr = MatOCR8D(language='spa')
 
-# Get detailed results
-result = ocr.extract_text("document.png", return_details=True)
-print(f"Extracted: {result['text']}")
-print(f"Total words: {result['total_words']}")
-print(f"Average confidence: {result['confidence']}")
-
-# Process multiple images
-image_paths = ["page1.jpg", "page2.jpg", "page3.jpg"]
-results = ocr.extract_text_batch(image_paths)
-for i, result in enumerate(results):
-    print(f"Page {i+1}: {result}")
+# Get available languages
+languages = ocr.get_available_languages()
+print(f"Available languages: {languages}")
 ```
 
-## OCR Engines
-
-### Tesseract
-
-- **Installation**: Install Tesseract OCR engine on your system
-  - Ubuntu: `sudo apt-get install tesseract-ocr`
-  - macOS: `brew install tesseract`
-  - Windows: Download from [Tesseract at UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki)
-- **Python package**: `pip install pytesseract`
-
-### EasyOCR
-
-- **Installation**: `pip install easyocr`
-- **Features**: GPU support, 80+ languages, deep learning-based
-
-### PaddleOCR
-
-- **Installation**: `pip install paddleocr`
-- **Features**: High accuracy, multilingual, lightweight models
-
-## Image Preprocessing
-
-MatOCR8D includes advanced image preprocessing to improve OCR accuracy:
+### Custom Tesseract Path
 
 ```python
-from matocr8d.preprocessing import ImagePreprocessor
-
-preprocessor = ImagePreprocessor()
-
-# Apply comprehensive enhancement
-enhanced_image = preprocessor.enhance_for_ocr("image.jpg")
-
-# Deskew image
-deskewed_image = preprocessor.deskew("scanned_document.jpg")
-
-# Custom preprocessing operations
-processed_image = preprocessor.process(
-    "image.jpg",
-    operations=['grayscale', 'noise_reduction', 'contrast_enhancement']
-)
+# Specify custom Tesseract executable path
+ocr = MatOCR8D(tesseract_cmd='C:/Program Files/Tesseract-OCR/tesseract.exe')
 ```
 
-## Supported Languages
+### Using PIL Image Objects
 
-Different engines support different languages:
+```python
+from PIL import Image
+from matocr8d import MatOCR8D
 
-### Tesseract
-- English, Chinese, Japanese, Korean, Arabic, Russian, German, French, Spanish, Italian, and many more
+# Load image with PIL
+image = Image.open("path/to/image.jpg")
 
-### EasyOCR  
-- 80+ languages including English, Chinese (Simplified/Traditional), Japanese, Korean, Arabic, Hindi, and more
-
-### PaddleOCR
-- Chinese, English, Japanese, Korean, French, German, Spanish, and more
+# Extract text from PIL Image object
+ocr = MatOCR8D()
+text = ocr.extract_text(image)
+print(text)
+```
 
 ## API Reference
 
 ### MatOCR8D Class
 
+#### Constructor
+
 ```python
-class MatOCR8D:
-    def __init__(self, 
-                 engine: str = "tesseract",
-                 language: Union[str, List[str]] = "eng",
-                 preprocessing: bool = True,
-                 confidence_threshold: float = 0.5,
-                 **kwargs):
-        """Initialize OCR engine"""
-    
-    def extract_text(self, 
-                    image_path: Union[str, Path],
-                    preprocess: Optional[bool] = None,
-                    return_confidence: bool = False,
-                    return_details: bool = False) -> Union[str, Dict]:
-        """Extract text from image"""
-    
-    def extract_text_batch(self, 
-                          image_paths: List[Union[str, Path]],
-                          **kwargs) -> List[Union[str, Dict]]:
-        """Extract text from multiple images"""
+MatOCR8D(language='eng', tesseract_cmd=None)
+```
+
+- `language` (str): Language code for OCR (default: 'eng')
+- `tesseract_cmd` (str, optional): Path to Tesseract executable
+
+#### Methods
+
+##### `extract_text(image_input)`
+
+Extract plain text from an image.
+
+**Parameters:**
+- `image_input` (str or PIL.Image): Path to image file or PIL Image object
+
+**Returns:**
+- `str`: Extracted text
+
+##### `extract_text_with_data(image_input)`
+
+Extract text with additional metadata.
+
+**Parameters:**
+- `image_input` (str or PIL.Image): Path to image file or PIL Image object
+
+**Returns:**
+- `dict`: Dictionary containing:
+  - `text`: Extracted text
+  - `raw_data`: Raw OCR data
+  - `confidence`: Average confidence score
+  - `word_count`: Number of words detected
+
+##### `extract_text_blocks(image_input)`
+
+Extract text blocks with bounding box coordinates.
+
+**Parameters:**
+- `image_input` (str or PIL.Image): Path to image file or PIL Image object
+
+**Returns:**
+- `list`: List of dictionaries containing:
+  - `text`: Text block content
+  - `confidence`: Confidence score
+  - `bbox`: Bounding box coordinates (x, y, width, height)
+
+##### `get_available_languages()`
+
+Get list of available OCR languages.
+
+**Returns:**
+- `list`: Available language codes
+
+## Supported Image Formats
+
+- JPEG (.jpg, .jpeg)
+- PNG (.png)
+- BMP (.bmp)
+- TIFF (.tiff, .tif)
+- WebP (.webp)
+
+## Error Handling
+
+The library provides custom exceptions for better error handling:
+
+- `OCRError`: Base exception for OCR-related errors
+- `ImageLoadError`: Raised when an image cannot be loaded
+- `UnsupportedFormatError`: Raised when an unsupported image format is provided
+
+```python
+from matocr8d import MatOCR8D, OCRError, ImageLoadError
+
+ocr = MatOCR8D()
+
+try:
+    text = ocr.extract_text("nonexistent.jpg")
+except ImageLoadError as e:
+    print(f"Image error: {e}")
+except OCRError as e:
+    print(f"OCR error: {e}")
 ```
 
 ## Examples
 
-### Document Processing
+Check the `examples/` directory for more usage examples:
 
-```python
-from matocr8d import MatOCR8D
-
-# Initialize for document processing
-ocr = MatOCR8D(
-    engine="tesseract",
-    language="eng",
-    preprocessing=True,
-    confidence_threshold=0.8
-)
-
-# Process a document
-document_text = ocr.extract_text("contract.pdf")
-print("Contract text:", document_text)
-```
-
-### Multilingual Text Extraction
-
-```python
-# Extract text from multilingual document
-ocr = MatOCR8D(engine="easyocr", language=["en", "fr", "de"])
-result = ocr.extract_text("multilingual_doc.jpg", return_details=True)
-
-for word_info in result['results']:
-    print(f"Text: {word_info['text']}")
-    print(f"Confidence: {word_info['confidence']}")
-    print(f"Position: {word_info['bbox']}")
-```
-
-### Receipt Processing
-
-```python
-# Process receipt with custom preprocessing
-ocr = MatOCR8D(engine="paddleocr", preprocessing=True)
-result = ocr.extract_text("receipt.jpg", return_details=True)
-
-# Filter high-confidence text
-high_confidence_text = [
-    item['text'] for item in result['results'] 
-    if item['confidence'] > 0.9
-]
-print("High confidence text:", high_confidence_text)
-```
+- Basic text extraction
+- Batch processing
+- Text detection with confidence filtering
+- Multi-language OCR
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-### Development Setup
-
-```bash
-git clone https://github.com/yourusername/matocr8d.git
-cd matocr8d
-pip install -e .[dev]
-```
-
-### Running Tests
-
-```bash
-pytest
-```
-
-### Code Formatting
-
-```bash
-black matocr8d/
-flake8 matocr8d/
-```
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Changelog
+## Acknowledgments
 
-See [CHANGELOG.md](CHANGELOG.md) for a list of changes and version history.
-
-## Support
-
-- **Documentation**: [https://matocr8d.readthedocs.io/](https://matocr8d.readthedocs.io/)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/matocr8d/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/matocr8d/discussions)
-
-## Citation
-
-If you use MatOCR8D in your research, please cite:
-
-```bibtex
-@software{matocr8d,
-  title={MatOCR8D: Advanced OCR Library for Python},
-  author={MatOCR8D Team},
-  year={2024},
-  url={https://github.com/yourusername/matocr8d}
-}
-```
-
----
-
-**MatOCR8D** - Making OCR simple and powerful! 🚀
+- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for the OCR engine
+- [Pillow](https://pillow.readthedocs.io/) for image processing
+- [pytesseract](https://pypi.org/project/pytesseract/) for Python Tesseract wrapper
