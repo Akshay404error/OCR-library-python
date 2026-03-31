@@ -41,7 +41,7 @@ twine upload dist/*
 
 ## Step 3: Add API Token to GitHub Secrets
 
-1. **Go to your GitHub repository**: https://github.com/Akshay404error/OCR-library-python
+1. **Go to your GitHub repository**: https://github.com/matocr8d/matocr8d
 2. Click on **"Settings"** tab
 3. In the left sidebar, click **"Secrets and variables"** → **"Actions"**
 4. Click **"New repository secret"**
